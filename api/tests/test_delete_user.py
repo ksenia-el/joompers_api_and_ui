@@ -1,6 +1,6 @@
 import pytest
 from api.api_library.user_account import UserAccount
-from api.test_data.test_data_register_and_login_and_logout_and_delete_user import TestData
+from api.test_data.test_data_user_account import TestData
 from api.conftest import user_logged_in_session_fixture
 
 
