@@ -1,7 +1,7 @@
 import pytest
-from api_library import Endpoints
+from api.api_library.user_account import UserAccount
 import requests
-from test_data import TestData
+from api.test_data.test_data_register_and_login_and_logout_and_delete_user import TestData
 
 
 # fixture to create a session with user being authenticated
@@ -9,7 +9,7 @@ from test_data import TestData
 @pytest.fixture()
 def user_logged_in_session_fixture():
     session = requests.Session()
-    api = Endpoints(session)
+    api = UserAccount(session)
     response_body, status = api.log_in_with_email(TestData.valid_user_credentials[0]["email"], TestData.valid_user_credentials[0]["password"])
     access_token = response_body.get("access_token")
     session.headers.update({"Authorization": f"Bearer {access_token}"})

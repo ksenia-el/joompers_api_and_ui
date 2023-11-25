@@ -1,9 +1,8 @@
 import pytest
 import allure
-from api_library import Endpoints
-from test_data import TestData
+from api.api_library.user_account import UserAccount
+from api.test_data.test_data_register_and_login_and_logout_and_delete_user import TestData
 import requests
-import json
 
 
 class TestUserRegistration:
@@ -15,7 +14,7 @@ class TestUserRegistration:
     @pytest.mark.parametrize("credentials", TestData.valid_user_credentials)
     def test_user_registration_positive(self, credentials):
         session = requests.Session()
-        api = Endpoints(session)
+        api = UserAccount(session)
         response_body, status = api.user_registration(credentials)
         assert status == 201
         #  TODO: how to get a link to confirm registration from email?
@@ -27,7 +26,7 @@ class TestUserRegistration:
     @pytest.mark.parametrize("credentials", TestData.valid_user_credentials)
     def test_user_registration_second_attempt_negative(self, credentials):
         session = requests.Session()
-        api = Endpoints(session)
+        api = UserAccount(session)
         response_body, status = api.user_registration(credentials)
         assert status == 400
         expected_response_body = {
@@ -39,7 +38,7 @@ class TestUserRegistration:
 
     def test_user_registration_empty_request_negative(self):
         session = requests.Session()
-        api = Endpoints(session)
+        api = UserAccount(session)
         request_body = {}
         response_body, status = api.user_registration(request_body)
         assert status == 422
@@ -65,20 +64,26 @@ class TestUserRegistration:
         }
         assert response_body == expected_response_body
 
+    #  TODO
+    def test_user_registration_no_email_provided_negative(self):
+        pass
 
-    # def test_user_registration_no_email_provided_negative(self):
-    #
-    #
-    # def test_user_registration_no_password_provided_negative(self):
-    #
-    #
-    # def test_user_registration_empty_email_negative(self):
-    #
-    #
-    # def test_user_registration_empty_password_negative(self):
-    #
-    #
-    # def test_user_registration_incorrect_value_format_in_email_negative(self):
-    #
-    #
-    # def test_user_registration_incorrect_value_format_in_password_negative(self):
+    #  TODO
+    def test_user_registration_no_password_provided_negative(self):
+        pass
+
+    #  TODO
+    def test_user_registration_empty_email_negative(self):
+        pass
+
+    #  TODO
+    def test_user_registration_empty_password_negative(self):
+        pass
+
+    #  TODO
+    def test_user_registration_incorrect_value_format_in_email_negative(self):
+        pass
+
+    #  TODO
+    def test_user_registration_incorrect_value_format_in_password_negative(self):
+        pass
