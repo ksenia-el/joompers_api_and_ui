@@ -3,3 +3,4 @@
 api/tests/.pytest_cache
 api/tests/__pycache__
 __pycache__
+.env
