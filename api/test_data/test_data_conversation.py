@@ -33,5 +33,40 @@ class TestData:
                 },
                 "countMessages": int,
                 "unreadCount": (int, type(None))  # Может быть целым числом или None
+            },
+            {
+                "chatInfo": {
+                    "id": str,
+                    "type": str,
+                    "isBlocked": bool,
+                    "companion": {
+                        "profile": {
+                            "id": str,
+                            "userId": str,
+                            "name": str,
+                            "username": str,
+                            "photoUrl": (str, type(None)),  # Может быть строкой или None
+                            "isBlockedByCurrentUser": bool,
+                            "isBlockedByUser": bool
+                        }
+                    }
+                },
+                "messages": [
+                    {
+                        "id": str,
+                        "message": str,
+                        "profile": {
+                            "id": str,
+                            "userId": str,
+                            "name": str,
+                            "username": str,
+                            "photoUrl": (str, type(None)),  # Может быть строкой или None
+                        },
+                        "createdAt": str,
+                        "currentUserView": bool,
+                        "companionView": bool,
+                        "incoming": bool
+                    }
+                ]
             }
         ]

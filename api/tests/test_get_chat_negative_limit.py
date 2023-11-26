@@ -1,8 +1,13 @@
 import pytest
 import requests
+import allure
 from api.test_data.test_data_conversation import TestData
 from api.api_library.conversation import Conversation
 import sys
+
+@allure.feature('Get all chat conversations')
+@allure.description('Chat conversations with negative limit')
+@allure.severity('Normal')
 
 def test_get_all_conversations_with_negative_limit(authenticated_session):
     conversation_api = Conversation(authenticated_session)
@@ -17,4 +22,4 @@ def test_get_all_conversations_with_negative_limit(authenticated_session):
         print("Response JSON:", response_json)
         assert True 
     else:
-        assert False, f"Unexpected status code: {status_code} - Expected 400 for negative limit"
+        assert False, f"Unexpected status code: {status_code} - Expected 500 for negative limit"
