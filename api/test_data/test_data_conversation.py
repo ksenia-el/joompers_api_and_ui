@@ -68,5 +68,11 @@ class TestData:
                         "incoming": bool
                     }
                 ]
+            },
+            {
+                "message": "Successfully sent message"
+            },
+            {
+                "detail": "Chat with this id does not exist in your chats"
             }
         ]
