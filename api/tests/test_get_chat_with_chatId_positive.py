@@ -6,17 +6,21 @@ from api.api_library.conversation import Conversation
 @allure.feature('Get chat with chatId')
 @allure.description('Chat conversations by chatId with default limit and offset')
 @allure.severity('Normal')
-def test_get_chat_with_default_limit_and_offset(authenticated_session):
+@pytest.mark.parametrize("limit, offset, expected_status", [
+    (100, 0, 200),
+    (50, 1, 200),
+])
+def test_get_chat_with_default_limit_and_offset(authenticated_session, chat_id, limit, offset, expected_status):
+    params = {'chatId': chat_id, "limit": limit, "offset": offset}
     conversation_api = Conversation(authenticated_session)
-    chat_id = '68eda51b-a945-40ee-bbaa-dc1daa79ad06'
-    response_json, status_code = conversation_api.chat_list_with_chatId(chat_id, 100, 0)
+    response_json, status_code = conversation_api.chat_list(params)
 
     print("Status Code:", status_code)
     print("Response JSON:", response_json)
 
     expected_response = TestData.get_expected_response()[1]
 
-    assert status_code == 200
+    assert status_code == expected_status, f"Expected status code {expected_status}, got {status_code}"
 
     for expected_item, response_item in zip(expected_response, response_json):
         check_structure(expected_item, response_item)

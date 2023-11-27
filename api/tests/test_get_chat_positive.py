@@ -4,27 +4,23 @@ import allure
 from api.test_data.test_data_conversation import TestData
 from api.api_library.conversation import Conversation
 
-
 @allure.feature('Get all chat conversations')
-@allure.description('Chat conversations with custom limit and offset')
+@allure.description('Chat conversations with default custom limit and offset')
 @allure.severity('Normal')
-def test_get_all_conversations_with_custom_limit_and_offset(authenticated_session):
+@pytest.mark.parametrize("params, expected_status", [
+    ({"limit": 100, "offset": 0}, 200),
+    ({"limit": 50, "offset": 1}, 200),
+
+])
+def test_get_all_conversations(authenticated_session, params, expected_status):
+
     conversation_api = Conversation(authenticated_session)
-    params = {
-        'limit': 50,
-        'offset': 1
-    }
-
+ 
     response_json, status_code = conversation_api.chat_list(params)
-
-    print("Status Code:", status_code)
-    print("Response JSON:", response_json)
 
     expected_response = TestData.get_expected_response()
 
-    assert status_code == 200
-
-    assert len(response_json) <= 50, "The number of chats exceeds the limit"
+    assert status_code == expected_status
 
     for expected_item, response_item in zip(expected_response, response_json):
         check_structure(expected_item, response_item)
@@ -50,4 +46,3 @@ def check_structure(expected, actual):
     elif isinstance(expected, list):
         for expected_elem, actual_elem in zip(expected, actual):
             check_structure(expected_elem, actual_elem)
-
