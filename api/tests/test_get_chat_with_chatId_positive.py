@@ -4,13 +4,13 @@ from api.test_data.test_data_conversation import TestData
 from api.api_library.conversation import Conversation
 
 @allure.feature('Get chat with chatId')
-@allure.description('Chat conversations by chatId with default limit and offset')
+@allure.description('Chat conversations by chatId with positive limit and offset')
 @allure.severity('Normal')
 @pytest.mark.parametrize("limit, offset, expected_status", [
     (100, 0, 200),
     (50, 1, 200),
 ])
-def test_get_chat_with_default_limit_and_offset(authenticated_session, chat_id, limit, offset, expected_status):
+def test_get_chat_with_positive_limit_and_offset(authenticated_session, chat_id, limit, offset, expected_status):
     params = {'chatId': chat_id, "limit": limit, "offset": offset}
     conversation_api = Conversation(authenticated_session)
     response_json, status_code = conversation_api.chat_list(params)
