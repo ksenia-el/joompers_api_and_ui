@@ -11,8 +11,7 @@ from api.api_library.conversation import Conversation
 ])
 def test_get_chat_with_chatId_negative_limit(authenticated_session, chat_id, limit, offset, expected_status):
     conversation_api = Conversation(authenticated_session)
-    params = {'chatId': chat_id, "limit": limit, "offset": offset}
- 
+
     response_json, status_code = conversation_api.chat_list_with_chatId(chat_id, limit, offset)
 
     expected_response = TestData.get_expected_response()[1]

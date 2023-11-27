@@ -13,7 +13,6 @@ from api.api_library.conversation import Conversation
 
 ])
 def test_get_all_conversations(authenticated_session, params, expected_status):
-
     conversation_api = Conversation(authenticated_session)
  
     response_json, status_code = conversation_api.chat_list(params)

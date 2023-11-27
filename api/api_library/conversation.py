@@ -1,5 +1,6 @@
 import requests
 import allure
+from json.decoder import JSONDecodeError
 
 
 class Conversation:
@@ -8,11 +9,11 @@ class Conversation:
         self.session = session
 
     @allure.step('Get chat list')
-    def chat_list(self, request_body):
-        response = self.session.get(
-            self.base_url + "/api/conversation/chats",
-            params=request_body
-        )
+    def chat_list(self, params):
+        limit = params.get("limit")
+        offset = params.get("offset")
+        url = f"{self.base_url}/api/conversation/chats?limit={limit}&offset={offset}"
+        response = self.session.get(url)
         status = response.status_code
 
         if status == 200:

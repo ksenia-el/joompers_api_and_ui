@@ -6,12 +6,13 @@ from api.api_library.conversation import Conversation
 @allure.feature('Get chat with chatId')
 @allure.description('Chat conversations by chatId with negative limit')
 @allure.severity('Normal')
-@pytest.mark.parametrize("limit, offset, expected_status", [
-    (-1, 0, 500), 
+@pytest.mark.parametrize("params, expected_status", [
+     ({"limit": -1, "offset": 0}, 500),
 ])
-def test_get_chat_with_chatId_negative_limit(authenticated_session, chat_id, limit, offset, expected_status):
+def test_get_chat_with_chatId_negative_limit(authenticated_session, params, expected_status):
     conversation_api = Conversation(authenticated_session)
-    response_json, status_code = conversation_api.chat_list_with_chatId(chat_id, limit, offset)
+    response_json, status_code = conversation_api.chat_list(params)
+
 
     if status_code == expected_status: 
         print("Response JSON:", response_json)
