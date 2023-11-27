@@ -15,8 +15,6 @@ def test_get_chat_with_chatId_negative_limit_and_offset(authenticated_session, c
 
     response_json, status_code = conversation_api.chat_list_with_chatId(chat_id, limit, offset)
 
-    expected_response = TestData.get_expected_response()[1]
-
     if status_code == expected_status: 
         print("Response JSON:", response_json)
         assert True 
