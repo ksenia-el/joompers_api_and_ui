@@ -6,14 +6,14 @@ from api.api_library.conversation import Conversation
 import sys
 
 @allure.feature('Get all chat conversations')
-@allure.description('Chat conversations with non integer limit')
+@allure.description('Chat conversations with non integer limit and offset')
 @allure.severity('Normal')
 @pytest.mark.parametrize("params, expected_status", [
     ({"limit": 'one', "offset": 0}, 422),
-
+    ({"limit": 100, "offset": 'one'}, 422),
 ])
 
-def test_get_all_conversations_with_non_integer_limit(authenticated_session, params, expected_status):
+def test_get_all_conversations_with_non_integer_limit_and_offset(authenticated_session, params, expected_status):
     conversation_api = Conversation(authenticated_session)
 
     response_json, status_code = conversation_api.chat_list(params)
