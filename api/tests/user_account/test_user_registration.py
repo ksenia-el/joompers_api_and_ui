@@ -15,7 +15,7 @@ class TestUserRegistration:
     def test_user_registration_positive(self, credentials):
         session = requests.Session()
         api = UserAccount(session)
-        response_body, status = api.user_registration(credentials)
+        response_body, status = api.user_registration(credentials) # TODO fix it after changes in user_registration parameters
         assert status == 201
         #  TODO: how to get a link to confirm registration from email?
         expected_response_body = {
@@ -27,7 +27,7 @@ class TestUserRegistration:
     def test_user_registration_second_attempt_negative(self, credentials):
         session = requests.Session()
         api = UserAccount(session)
-        response_body, status = api.user_registration(credentials)
+        response_body, status = api.user_registration(credentials) # TODO fix it after changes in user_registration parameters
         assert status == 400
         expected_response_body = {
             "code": "already_exist",
@@ -40,7 +40,7 @@ class TestUserRegistration:
         session = requests.Session()
         api = UserAccount(session)
         request_body = {}
-        response_body, status = api.user_registration(request_body)
+        response_body, status = api.user_registration(request_body)  # TODO fix it after changes in user_registration parameters
         assert status == 422
         expected_response_body = {
             "detail": [

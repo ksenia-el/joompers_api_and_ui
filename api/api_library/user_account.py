@@ -9,7 +9,12 @@ class UserAccount:
         self.session = session
 
     @allure.step('Register user with credentials provided in test data')
-    def user_registration(self, request_body):
+    def user_registration(self, email, password):
+        request_body = {
+            "email": email,
+            "password": password
+        }
+
         response = requests.post(
             self.base_url + "/api/registration",
             json=request_body  # !use this form for each request in JSON format, no "json.dumps()" needed
