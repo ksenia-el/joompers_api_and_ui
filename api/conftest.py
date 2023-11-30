@@ -13,8 +13,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Loading required variables from the .env file
-VALID_EMAIL = os.environ["VALID_EMAIL"]
-VALID_PASSWORD = os.environ["VALID_PASSWORD"]
+VALID_EMAIL = os.environ.get("VALID_EMAIL")
+VALID_PASSWORD = os.environ.get("VALID_PASSWORD")
 # CLIENT_ID = os.environ["CLIENT_ID"]
 # CLIENT_SECRET = os.environ["CLIENT_SECRET"]
 # SCOPE = os.environ.get("SCOPE", "")
