@@ -196,7 +196,27 @@ def new_user_logged_in_session_and_data_fixture():
 
 
 
+@pytest.fixture(scope="session")
+def uuid_retrieval():
+    session = requests.Session()
+    login_data = {
+        "grant_type": "password",
+        "username": VALID_EMAIL,
+        "password": VALID_PASSWORD,
+    }
 
+    response = session.post(
+        "https://api.dev.joompers.com/api/login/oauth",
+        data=login_data
+    )
+
+    assert response.status_code == 200, f"Failed to log in: {response.text}"
+    access_token = response.json().get("access_token")
+    session.headers.update({"Authorization": f"Bearer {access_token}"})
+
+    uuid = response.json().get("user_profile_id")
+    assert uuid is not None, "Failed to retrieve uuid"
+    return uuid
 
 
 
