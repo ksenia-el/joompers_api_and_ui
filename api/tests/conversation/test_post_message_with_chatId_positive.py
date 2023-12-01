@@ -2,6 +2,7 @@ import pytest
 import allure
 from api.test_data.test_data_conversation import TestData
 from api.api_library.conversation import Conversation
+from api.conftest import user_logged_in_session_fixture
 
 @allure.feature('Send message with chatId')
 @allure.description('Send message to chat by chatId')
@@ -11,7 +12,8 @@ from api.api_library.conversation import Conversation
     ("!№;%:?*+.,-)(}{", 201),
     ("", 201)
 ])
-def test_send_message_with_chatId(authenticated_session, chat_id, message, expected_status):
+def test_send_message_with_chatId(user_logged_in_session_fixture, chat_id, message, expected_status):
+    authenticated_session = user_logged_in_session_fixture[0]
     conversation_api = Conversation(authenticated_session)
     
     response_json, status_code = conversation_api.chat_with_chatId_post_message(chat_id, message)

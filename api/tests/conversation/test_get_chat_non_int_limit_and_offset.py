@@ -3,6 +3,7 @@ import requests
 import allure
 from api.test_data.test_data_conversation import TestData
 from api.api_library.conversation import Conversation
+from api.conftest import user_logged_in_session_fixture
 import sys
 
 @allure.feature('Get all chat conversations')
@@ -13,7 +14,8 @@ import sys
     ({"limit": 100, "offset": 'one'}, 422),
 ])
 
-def test_get_all_conversations_with_non_integer_limit_and_offset(authenticated_session, params, expected_status):
+def test_get_all_conversations_with_non_integer_limit_and_offset(user_logged_in_session_fixture, params, expected_status):
+    authenticated_session = user_logged_in_session_fixture[0]
     conversation_api = Conversation(authenticated_session)
 
     response_json, status_code = conversation_api.chat_list(params)
