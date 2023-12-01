@@ -38,9 +38,9 @@ class EmailAndPasswordGenerator:
         username = ''.join(random.choice(username_symbols) for i in range(10))
         self.email = f'{username}@{random_domain_from_list}'  # by that we create email address
 
-        # then we create a password from 10 random symbols (from lower and upper case, and digits)
+        # then we create a password from 8 random symbols (from lower and upper case, and digits)
         password_symbols = string.ascii_lowercase + string.ascii_uppercase + string.digits
-        self.password = ''.join(random.choice(password_symbols) for i in range(10))
+        self.password = ''.join(random.choice(password_symbols) for i in range(8))
 
         print(f"Email generated for test user account: {self.email}\nPassword generated for test user account: {self.password}")
 
@@ -56,7 +56,7 @@ class EmailAndPasswordGenerator:
     # (if multiple mails with confirmation link were received, then it returns the recent one)
     # or returns None as a value for token - if no mail with confirmation link was received
     def get_token_from_confirmation_link_for_registration(self):
-        time.sleep(10)  # time gap to wait for new mails to be received, INCREASE IF IT'S NOT ENOUGH
+        time.sleep(8)  # time gap to wait for new mails to be received, INCREASE IF IT'S NOT ENOUGH
         link_found = None
 
         # check the email for new mails
@@ -121,7 +121,7 @@ class EmailAndPasswordGenerator:
     # or returns None for "code" - if no mail with code was found
     # (if multiple mails with codes were found in email, then the method returns the most recent one)
     def get_confirmation_code_for_delete_user(self):
-        time.sleep(10)
+        time.sleep(8)
         code_found = None
 
         # log into the email

@@ -5,6 +5,7 @@ from jsonschema import validate
 
 from api.api_library.profile import Profile
 from api.test_data.test_data_profile import ProfileJsonSchemas as schema
+from api.conftest import user_logged_in_session_fixture
 
 
 @allure.feature("Get user followers list")
@@ -16,9 +17,11 @@ class TestGetUserFollowers:
         "all",
         "user"
     ])
-    def test_get_user_followers_with_valid_user_types_and_user_profile_id(self, authenticated_session, uuid_retrieval, user_type):
+    def test_get_user_followers_with_valid_user_types_and_user_profile_id(self, user_logged_in_session_fixture, user_type):
+        authenticated_session = user_logged_in_session_fixture[0]
+        uuid = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
-        uuid = uuid_retrieval
+
         response_body, status_code = profile_api.get_profile_followers(uuid, user_type)
         assert status_code == 200, "Failed to get user followers"
 
@@ -31,10 +34,11 @@ class TestGetUserFollowers:
         (0, 1),
         (3, 1)
     ])
-    def test_get_user_followers_limit_and_offset(self, authenticated_session,
-                                                 uuid_retrieval, limit, offset):
+    def test_get_user_followers_limit_and_offset(self, user_logged_in_session_fixture, limit, offset):
+        authenticated_session = user_logged_in_session_fixture[0]
+        uuid = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
-        uuid = uuid_retrieval
+
         user_type = "all"
         response_body, status_code = profile_api.get_profile_followers(uuid, user_type, limit=limit, offset=offset)
 
@@ -52,9 +56,11 @@ class TestGetUserFollowers:
         123,
         "^$#>/"
     ])
-    def test_get_user_followers_with_invalid_user_type(self, authenticated_session, uuid_retrieval, user_type):
+    def test_get_user_followers_with_invalid_user_type(self, user_logged_in_session_fixture, user_type):
+        authenticated_session = user_logged_in_session_fixture[0]
+        uuid = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
-        uuid = uuid_retrieval
+
         response_body, status_code = profile_api.get_profile_followers(uuid, user_type)
         if status_code == 200:
             assert not response_body['profiles'], "API returned profiles for invalid user_type"
@@ -74,10 +80,11 @@ class TestGetUserFollowers:
         (10, ""),
         ("", 10),
     ])
-    def test_get_user_followers_invalid_limit_and_offset(self, authenticated_session,
-                                                          uuid_retrieval, limit, offset):
+    def test_get_user_followers_invalid_limit_and_offset(self, user_logged_in_session_fixture, limit, offset):
+        authenticated_session = user_logged_in_session_fixture[0]
+        uuid = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
-        uuid = uuid_retrieval
+
         user_type = "all"
         response_body, status_code = profile_api.get_profile_followers(uuid, user_type, limit=limit, offset=offset)
 
@@ -89,8 +96,10 @@ class TestGetUserFollowers:
         except jsonschema.exceptions.ValidationError as e:
             assert False, f"Response did not match schema: {e}"
 
-    def test_get_user_followers_with_non_existing_user_profile_id(self, authenticated_session):
+    def test_get_user_followers_with_non_existing_user_profile_id(self, user_logged_in_session_fixture):
+        authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
+
         uuid = "9fa85f64-5717-4562-b3fc-2c963f66afa6"
         response_body, status_code = profile_api.get_profile_followers(uuid, users_type="all")
         assert status_code == 404, f"Expected 404 for non existing user_profile_id, got {status_code} instead"
@@ -100,8 +109,10 @@ class TestGetUserFollowers:
         except jsonschema.exceptions.ValidationError as e:
             assert False, f"Response did not match schema: {e}"
 
-    def test_get_user_followers_with_invalid_format_user_profile_id(self, authenticated_session, uuid_retrieval):
+    def test_get_user_followers_with_invalid_format_user_profile_id(self, user_logged_in_session_fixture):
+        authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
+
         uuid = "abc"
         response_body, status_code = profile_api.get_profile_followers(uuid, users_type="all")
         assert status_code == 422, f"Expected 422 for invalid parameters, got {status_code} instead"
