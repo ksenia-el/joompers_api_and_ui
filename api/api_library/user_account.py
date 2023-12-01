@@ -22,6 +22,14 @@ class UserAccount:
         status = response.status_code
         return response.json(), status
 
+
+    def confirm_email(self, token):
+        response = self.session.get(
+            self.base_url + f"/api/email/confirm_email/{token}"
+        )
+        return response.json(), response.status_code
+
+
     def log_in_with_email(self, email_or_username, password):
         request_body = {
             "username": email_or_username,
@@ -60,3 +68,15 @@ class UserAccount:
     #  TODO:
     def change_user_role(self):
         pass
+
+
+
+    @allure.step('Register user with the custom request_body provided in parameters')
+    def user_registration_custom_body(self, request_body):
+        response = requests.post(
+            self.base_url + "/api/registration",
+            json=request_body
+        )
+        status = response.status_code
+        return response.json(), status
+
