@@ -4,6 +4,8 @@
 # - check email and return confirmation code needed to complete deleting user (in DELETE /api/delete/user/{code})
 # - delete temporary email generated before
 
+# (email is created and used by utilizing this service: https://www.1secmail.com/api/)
+
 import requests
 import random
 import string
@@ -89,7 +91,7 @@ class EmailAndPasswordGenerator:
                 content = get_mail_response.get("htmlBody")
 
                 if (sender == "confirm@joompers.com" and subject == "Welcome to Joompers"):
-                    pattern_to_look_for = re.search('Please confirm your e-mail\s*</h3>\s*<a href="([^"]+)">', content)
+                    pattern_to_look_for = re.search(r'Please confirm your e-mail\s*</h3>\s*<a href="([^"]+)">', content)
                     confirmation_link = pattern_to_look_for.group(1) \
                         if pattern_to_look_for else None  # returns link found - or None if not found
                     if confirmation_link is not None:  # so, if link found
