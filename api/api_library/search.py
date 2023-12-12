@@ -14,6 +14,8 @@ class Search:
         status = response.status_code
         return response.json(), status
 
+
+
     # def search_user(self):
     #     response = requests.get(
     #         self.base_url + "/api/search",
