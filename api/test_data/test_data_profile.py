@@ -1,3 +1,53 @@
+
+class ProfileTestData:
+    other_creator_profile_id = "500e8112-e2fb-446b-9de2-251cf491708d"
+    other_common_user_profile_id = "aae58dd2-c9b9-4f7b-b653-3eedc97b5a09"
+    non_existing_user_profile_id = "9fa85f64-5717-4562-b3fc-2c963f66afa6"
+    instagram_id = "56c6b6ee-b9ba-47e9-bc07-9b562a3424af"
+    twitter_id = "701ba986-69be-4cc2-9f2e-58f48395b105"
+    facebook_id = "402cdbc1-ca9d-42b2-94d8-56062e133f39"
+    youtube_id = "3d4c0d2b-95b4-444c-8b5e-e9cad5052d6d"
+    instagram_example_link = "http:"
+    twitter_example_link = "http:"
+    youtube_example_link = "http:"
+    facebook_example_link = "http:"
+    non_existing_social_network_id = "1d4c0d2b-95b4-444c-8b5e-e9cad5052d6d"
+    profession_id_books = "a37eb0fb-2e32-4b71-af2d-c84f0fd204a9"
+    profession_id_music = "fba72428-aaba-48ba-86ae-9ae2ced13e5e"
+    valid_username_pattern = "max"
+    non_existing_username_pattern = "uyrewoepowhbjf_333_99"
+
+
+    update_profile_full_valid_data = {
+        "country": "United Kingdom",
+        "name": "new",
+        "username": "newusere123456",
+        "sex": "Female",
+        "bio": "string2",
+        "professionId": "a37eb0fb-2e32-4b71-af2d-c84f0fd204a9",
+        "photoUrl": None,
+        "backgroundPictureUrl": None,
+        "chatMessageNotify": False
+    }
+    update_profile_empty_values = {
+
+        "country": None,
+        "name": None,
+        "username": None,
+        "sex": None,
+        "bio": None,
+        "professionId": None,
+        "photoUrl": None,
+        "backgroundPictureUrl": None,
+        "chatMessageNotify": None
+    }
+
+    empty_request_body = {
+    }
+
+
+
+
 class ProfileJsonSchemas:
     @staticmethod
     def get_followers_response_schema_success():
@@ -25,7 +75,7 @@ class ProfileJsonSchemas:
             "required": ["profiles", "count"]
         }
     @staticmethod
-    def get_followers_response_schema_validation_error():
+    def validation_error():
         return {
                 "type": "object",
                 "properties": {
@@ -55,7 +105,7 @@ class ProfileJsonSchemas:
             }
 
     @staticmethod
-    def get_followers_response_schema_not_found_error():
+    def not_found_error():
         return {
             "type": "object",
             "properties": {
@@ -94,6 +144,24 @@ class ProfileJsonSchemas:
             },
             "required": ["profiles", "count"]
         }
+    @staticmethod
+    def get_profile_by_username_response():
+        return {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "string"},
+                        "userId": {"type": "string"},
+                        "name": {"type": "string"},
+                        "username": {"type": "string"},
+                        "photoUrl": {"type": ["string", "null"]}
+                    },
+                    "required": ["id", "userId", "name", "username"]
+                }
+            }
+
+
     @staticmethod
     def get_settings_response_schema_success():
         return {
@@ -251,3 +319,5 @@ class ProfileJsonSchemas:
             },
             "required": ["id", "userId", "name", "username"]
         }
+
+
