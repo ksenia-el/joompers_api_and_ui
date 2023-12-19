@@ -5,6 +5,7 @@ from api.test_data.test_data_user_account import TestData
 import requests
 from api.support.temporary_email_generator import EmailAndPasswordGenerator
 from api.conftest import user_not_logged_in_session_fixture
+from api.conftest import new_user_logged_in_session_fixture
 import random
 import string
 
@@ -17,7 +18,7 @@ class TestUserRegistration:
     def test_user_registration_positive(self, user_not_logged_in_session_fixture):
         # generate email and password needed for user registration
         email_and_password_generator = EmailAndPasswordGenerator()
-        email, password = email_and_password_generator.generate_email_and_password()
+        username, email, password = email_and_password_generator.generate_username_and_email_and_password()
 
         # create session (empty, no user authorized yet)
         user_not_authorized_session = user_not_logged_in_session_fixture
@@ -25,7 +26,7 @@ class TestUserRegistration:
         api = UserAccount(user_not_authorized_session)
 
         # start user registration process by using one endpoint
-        request_user_registration = api.user_registration(email, password)
+        request_user_registration = api.user_registration(username, email, password)
         response_body, status = request_user_registration
 
         assert status == 201
@@ -66,20 +67,19 @@ class TestUserRegistration:
         email_and_password_generator.delete_email_generated()
 
 
-    def test_user_registration_with_email_already_used_negative(self, user_not_logged_in_session_fixture):
+    def test_user_registration_second_attempt_negative(self, user_not_logged_in_session_fixture):
         email_and_password_generator = EmailAndPasswordGenerator()
-        email, password = email_and_password_generator.generate_email_and_password()
+        username, email, password = email_and_password_generator.generate_username_and_email_and_password()
 
         api = UserAccount(user_not_logged_in_session_fixture)
 
         # first request to register user
-        request_user_registration = api.user_registration(email, password)
+        request_user_registration = api.user_registration(username, email, password)
         response_body, status = request_user_registration
         assert status == 201
-        # TODO
 
         # second request to register user with the same credentials
-        second_request_user_registration = api.user_registration(email, password)
+        second_request_user_registration = api.user_registration(username, email, password)
         response_body, status = second_request_user_registration
         assert status == 400
         expected_response_body = {
@@ -100,34 +100,43 @@ class TestUserRegistration:
 
         assert status == 422
         expected_response_body = {
-            "detail": [
-                {
-                    "loc": [
-                        "body",
-                        "email"
-                    ],
-                    "msg": "field required",
-                    "type": "value_error.missing"
-                },
-                {
-                    "loc": [
-                        "body",
-                        "password"
-                    ],
-                    "msg": "field required",
-                    "type": "value_error.missing"
-                }
-            ]
+          "detail": [
+            {
+              "loc": [
+                "body",
+                "username"
+              ],
+              "msg": "field required",
+              "type": "value_error.missing"
+            },
+            {
+              "loc": [
+                "body",
+                "email"
+              ],
+              "msg": "field required",
+              "type": "value_error.missing"
+            },
+            {
+              "loc": [
+                "body",
+                "password"
+              ],
+              "msg": "field required",
+              "type": "value_error.missing"
+            }
+          ]
         }
         assert response_body == expected_response_body
 
     def test_user_registration_no_email_provided_negative(self, user_not_logged_in_session_fixture):
         email_and_password_generator = EmailAndPasswordGenerator()
-        email, password = email_and_password_generator.generate_email_and_password()
+        username, email, password = email_and_password_generator.generate_username_and_email_and_password()
 
         api = UserAccount(user_not_logged_in_session_fixture)
 
         request_body = {
+            "username": username,
             "password": password
         }  # custom type of request body, without "email" inside
         request_user_registration_custom_body = api.user_registration_custom_body(request_body)
@@ -148,16 +157,17 @@ class TestUserRegistration:
         }
         assert response_body == expected_response_body
 
-        # delete email (not used) and password generated for the test before
+        # delete username, email (not used) and password generated for the test before
         email_and_password_generator.delete_email_generated()
 
     def test_user_registration_no_password_provided_negative(self, user_not_logged_in_session_fixture):
         email_and_password_generator = EmailAndPasswordGenerator()
-        email, password = email_and_password_generator.generate_email_and_password()
+        username, email, password = email_and_password_generator.generate_username_and_email_and_password()
 
         api = UserAccount(user_not_logged_in_session_fixture)
 
         request_body = {
+            "username": username,
             "email": email
         }  # custom type of request body, without "password" inside
         request_user_registration_custom_body = api.user_registration_custom_body(request_body)
@@ -178,16 +188,17 @@ class TestUserRegistration:
         }
         assert response_body == expected_response_body
 
-        # delete email and password (not used) generated for the test before
+        # delete username, email and password (not used) generated for the test before
         email_and_password_generator.delete_email_generated()
 
     def test_user_registration_empty_email_negative(self, user_not_logged_in_session_fixture):
         email_and_password_generator = EmailAndPasswordGenerator()
-        email, password = email_and_password_generator.generate_email_and_password()
+        username, email, password = email_and_password_generator.generate_username_and_email_and_password()
 
         api = UserAccount(user_not_logged_in_session_fixture)
 
         request_body = {
+            "username": username,
             "email": "",
             "password": password
         }  # custom type of request body, with empty string for "email" inside
@@ -209,16 +220,17 @@ class TestUserRegistration:
         }
         assert response_body == expected_response_body
 
-        # delete email (not used) and password generated for the test before
+        # delete username, email (not used) and password generated for the test before
         email_and_password_generator.delete_email_generated()
 
     def test_user_registration_empty_password_negative(self, user_not_logged_in_session_fixture):
         email_and_password_generator = EmailAndPasswordGenerator()
-        email, password = email_and_password_generator.generate_email_and_password()
+        username, email, password = email_and_password_generator.generate_username_and_email_and_password()
 
         api = UserAccount(user_not_logged_in_session_fixture)
 
         request_body = {
+            "username": username,
             "email": email,
             "password": ""
         }  # custom type of request body, with empty string for "password" inside
@@ -240,12 +252,12 @@ class TestUserRegistration:
         }
         assert response_body == expected_response_body
 
-        # delete email and password (not used) generated for the test before
+        # delete username, email and password (not used) generated for the test before
         email_and_password_generator.delete_email_generated()
 
     def test_user_registration_too_short_password_negative(self, user_not_logged_in_session_fixture):
         email_and_password_generator = EmailAndPasswordGenerator()
-        email, password = email_and_password_generator.generate_email_and_password()
+        username, email, password = email_and_password_generator.generate_username_and_email_and_password()
 
         # since password generated is 8-symbols_long
         seven_symbols_password = password[:-1] # we remove the last symbol to make it shorter
@@ -253,6 +265,7 @@ class TestUserRegistration:
         api = UserAccount(user_not_logged_in_session_fixture)
 
         request_body = {
+            "username": username,
             "email": email,
             "password": seven_symbols_password
         }
@@ -275,13 +288,13 @@ class TestUserRegistration:
 
         assert response_body == expected_response_body
 
-        # delete email and password generated for the test before
+        # delete username, email and password generated for the test before
         email_and_password_generator.delete_email_generated()
 
 
     def test_user_registration_too_long_password_negative(self, user_not_logged_in_session_fixture):
         email_and_password_generator = EmailAndPasswordGenerator()
-        email, password = email_and_password_generator.generate_email_and_password()
+        username, email, password = email_and_password_generator.generate_username_and_email_and_password()
 
         # since the password generated is 8-symbols_long,
         # we need to create another one instead, 33-symbols long
@@ -291,6 +304,7 @@ class TestUserRegistration:
         api = UserAccount(user_not_logged_in_session_fixture)
 
         request_body = {
+            "username": username,
             "email": email,
             "password": long_password
         }
@@ -313,19 +327,43 @@ class TestUserRegistration:
 
         assert response_body == expected_response_body
 
-        # delete email and password generated for the test before
+        # delete username, email and password generated for the test before
         email_and_password_generator.delete_email_generated()
 
-    def test_user_registration_wrong_symbols_in_password_negative(self):
-        pass
+    # #  TODO
+    # def test_user_registration_wrong_symbols_in_password_negative(self):
+    #     pass
+    #
+    # #  TODO
+    # def test_user_registration_incorrect_value_type_in_email_negative(self):
+    #     pass
+    #
+    # #  TODO
+    # def test_user_registration_incorrect_value_type_in_password_negative(self):
+    #     pass
 
+    def test_user_registration_email_already_used_negative(self, new_user_logged_in_session_fixture, user_not_logged_in_session_fixture):
+        # precondition: to have a user account already created
+        username = new_user_logged_in_session_fixture[6]
+        email = new_user_logged_in_session_fixture[1]
+        password = new_user_logged_in_session_fixture[2]
 
-    #  TODO
-    def test_user_registration_incorrect_value_type_in_email_negative(self):
-        pass
+        # create session (empty, no user authorized yet)
+        user_not_authorized_session = user_not_logged_in_session_fixture
+        #  next API calls will be done using not-authorized session
+        api = UserAccount(user_not_authorized_session)
 
-    #  TODO
-    def test_user_registration_incorrect_value_type_in_password_negative(self):
-        pass
+        # try to register user with the credentials of user that already exists in the system
+        request_user_registration = api.user_registration(username, email, password)
+        response_body, status = request_user_registration
 
+        assert status == 400
+        expected_response_body = {
+            "code": "already_exist",
+            "message": "User with this email is already exist"
+        }
+        assert response_body == expected_response_body
+
+        # now the user account and the email created before will be
+        # automatically deleted by the new_user_logged_in_session_fixture
 

@@ -60,5 +60,13 @@ class Password:
         return response.json(), status
 
 
+    #  ------ NEXT METHODS ARE USED IN NEGATIVE TESTS (to run API-calls with custom request body if needed)
 
-
+    # change password while being authorized and being in the user profile
+    def change_password_in_profile_custom_body(self, request_body):
+        response = self.session.post(
+            self.base_url + "/api/password/change_password_in_profile",
+            json=request_body  # !use this form for each request in JSON format, no "json.dumps()" needed
+        )
+        status = response.status_code
+        return response.json(), status

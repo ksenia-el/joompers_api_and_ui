@@ -12,20 +12,21 @@ import string
 import time
 import re
 from datetime import datetime
+from api.api_library.user_account import UserAccount
 
 
 class EmailAndPasswordGenerator:
 
     def __init__(self):
+        self.username = None
         self.email = None
         self.password = None
         self.api = "https://www.1secmail.com/api/v1/"  # link to the service that generates temporary email
 
-
     # method to generate email and password (that used in the endpoint POST /api/registration to create user account)
     # returns two strings: 1) email 2) password - if it was successfully generated;
     # otherwise - returns None for both email and password
-    def generate_email_and_password(self):
+    def generate_username_and_email_and_password(self):
 
         #  list of domains used to create an email
         domain_list = [
@@ -35,30 +36,42 @@ class EmailAndPasswordGenerator:
         ]
         random_domain_from_list = random.choice(domain_list)
 
-        # then we create a username from 10 random symbols (lower case and digits)
-        username_symbols = string.ascii_lowercase + string.digits
-        username = ''.join(random.choice(username_symbols) for i in range(10))
-        self.email = f'{username}@{random_domain_from_list}'  # by that we create email address
+
+        while self.username == None:
+            #  then we create a username (25-symbols long)
+            username_symbols = string.ascii_lowercase
+            username_generated = ''.join(random.choice(username_symbols) for i in range(25))
+            not_authorized_session = requests.Session()
+            user_account_api = UserAccount(not_authorized_session)
+            check_username_response = user_account_api.username_check(username_generated)
+            status = check_username_response
+            if status == 204:
+                self.username = username_generated
+
+        # and a username for email from 10 random symbols (lower case and digits)
+        email_symbols = string.ascii_lowercase + string.digits
+        email_username = ''.join(random.choice(email_symbols) for i in range(10))
+        self.email = f'{email_username}@{random_domain_from_list}'  # by that we create email address
 
         # then we create a password from 8 random symbols (from lower and upper case, and digits)
         password_symbols = string.ascii_lowercase + string.ascii_uppercase + string.digits
         self.password = ''.join(random.choice(password_symbols) for i in range(8))
 
-        print(f"Email generated for test user account: {self.email}\nPassword generated for test user account: {self.password}")
+        print(
+            f"Username generated for test user account: {self.username}\nEmail generated for test user account: {self.email}\nPassword generated for test user account: {self.password}")
 
         # sending request to log into the email generated - just to check it works
         log_in_response = requests.get(f"{self.api}?login={self.email.split('@')[0]}&domain={self.email.split('@')[1]}")
         assert log_in_response.status_code == 200, "Unknown error. Unable to log into the email generated. Try again"
 
-        return self.email, self.password
-
+        return self.username, self.email, self.password
 
     # returns token needed to complete user registration (used in the endpoint GET /api/email/confirm_email/{token})
     # returns one string with the value for "token" - if mail with confirmation link was found in the user email
     # (if multiple mails with confirmation link were received, then it returns the recent one)
     # or returns None as a value for token - if no mail with confirmation link was received
     def get_token_from_confirmation_link_for_registration(self):
-        time.sleep(8)  # time gap to wait for new mails to be received, INCREASE IF IT'S NOT ENOUGH
+        time.sleep(15)  # time gap to wait for new mails to be received, INCREASE IF IT'S NOT ENOUGH
         link_found = None
 
         # check the email for new mails
@@ -96,7 +109,7 @@ class EmailAndPasswordGenerator:
                         if pattern_to_look_for else None  # returns link found - or None if not found
                     if confirmation_link is not None:  # so, if link found
                         # then we get date-time of receiving this link into datetime-object
-                        date_parsed = datetime.strptime(date,"%Y-%m-%d %H:%M:%S")
+                        date_parsed = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
                         all_links_with_dates_detected.append((date_parsed, confirmation_link))  # save link + date-time
 
             if len(all_links_with_dates_detected) == 0:  # if no mail with confirmation link was found
@@ -117,13 +130,12 @@ class EmailAndPasswordGenerator:
 
         return token_from_confirmation_link
 
-
     # returns code neeeded to complete deleting user account (used in the endpoint DELETE /api/delete/user/{code})
     # returns one string with the value for "code" - if mail with code was found in the user email
     # or returns None for "code" - if no mail with code was found
     # (if multiple mails with codes were found in email, then the method returns the most recent one)
     def get_confirmation_code_for_delete_user(self):
-        time.sleep(8)
+        time.sleep(15)
         code_found = None
 
         # log into the email
@@ -161,7 +173,7 @@ class EmailAndPasswordGenerator:
                     confirmation_code = pattern_to_look_for.group(1) \
                         if (pattern_to_look_for) else None  # returns code found - or None if not found
                     if confirmation_code is not None:
-                        date_parsed = datetime.strptime(date,"%Y-%m-%d %H:%M:%S")
+                        date_parsed = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
                         all_codes_with_dates_detected.append((date_parsed, confirmation_code))
 
             if len(all_codes_with_dates_detected) == 0:  # if no mail with confirmation code was detected
@@ -192,3 +204,4 @@ class EmailAndPasswordGenerator:
         print(f"Email {self.email} was deleted\n")
         self.email = None
         self.password = None
+        self.username = None

@@ -9,19 +9,19 @@ class UserAccount:
         self.session = session
 
     @allure.step('Register user with credentials provided in test data')
-    def user_registration(self, email, password):
+    def user_registration(self, username, email, password):
         request_body = {
+            "username": username,
             "email": email,
             "password": password
         }
 
-        response = requests.post(
+        response = self.session.post(
             self.base_url + "/api/registration",
             json=request_body  # !use this form for each request in JSON format, no "json.dumps()" needed
         )
         status = response.status_code
         return response.json(), status
-
 
     def confirm_email(self, token):
         response = self.session.get(
@@ -29,13 +29,12 @@ class UserAccount:
         )
         return response.json(), response.status_code
 
-
     def log_in_with_email(self, email_or_username, password):
         request_body = {
             "username": email_or_username,
             "password": password
         }
-        response = requests.post(
+        response = self.session.post(
             self.base_url + "/api/login/oauth",
             data=request_body  # !use this form for each request in x-www-form-urlencoded format
         )
@@ -70,13 +69,30 @@ class UserAccount:
         pass
 
 
+    def username_check(self, username):
+        request_body = {"username": username}
+        response = self.session.post(
+            self.base_url + "/api/registration/username_check",
+            json=request_body
+        )
+        # TODO: customise return for successful and non- responses
+        return response.status_code
+
 
     @allure.step('Register user with the custom request_body provided in parameters')
     def user_registration_custom_body(self, request_body):
-        response = requests.post(
+        response = self.session.post(
             self.base_url + "/api/registration",
             json=request_body
         )
         status = response.status_code
         return response.json(), status
 
+    @allure.step('Log in with the custom request_body provided in parameters')
+    def log_in_with_email_custom_body(self, request_body):
+        response = self.session.post(
+            self.base_url + "/api/login/oauth",
+            data=request_body  # !use this form for each request in x-www-form-urlencoded format
+        )
+        status = response.status_code
+        return response.json(), status

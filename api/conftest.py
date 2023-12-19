@@ -104,12 +104,12 @@ def user_not_logged_in_session_fixture():
 @pytest.fixture()
 def new_user_logged_in_session_fixture():
     email_and_password_generator = EmailAndPasswordGenerator()
-    email, password = email_and_password_generator.generate_email_and_password()
+    username, email, password = email_and_password_generator.generate_username_and_email_and_password()
 
     session = requests.Session()
     user_account_api = UserAccount(session)
 
-    request_create_user = user_account_api.user_registration(email, password)
+    request_create_user = user_account_api.user_registration(username, email, password)
     response_body, status = request_create_user
     assert status == 201, "Error with request to register user. Try again"
 
@@ -131,7 +131,7 @@ def new_user_logged_in_session_fixture():
 
     session.headers.update({"Authorization": f"Bearer {access_token}"})  # by that we update session, so now the user is logged in
 
-    yield session, email, password, user_profile_id, user_role, user_status
+    yield session, email, password, user_profile_id, user_role, user_status, username  # TODO: update order?
     # ALL THE CODE ABOVE will be automatically executed before test itself (where this fixture is used)
 
     # ALL THE CODE BELOW will be executed after test itself
@@ -146,7 +146,7 @@ def new_user_logged_in_session_fixture():
     # print(f"Response for request_delete_user: {request_delete_user}")
     status = request_delete_user[1]
     assert status == 200, "Error with request to start delete user. Try again"
-    print(f"User (with email \'{email}\' and password \'{password}\' was successfully deleted")
+    print(f"User (with email \'{email}\' and password \'{password}\' and username \'{username}\'was successfully deleted")
 
     confirmation_code_for_delete_user_from_email = email_and_password_generator.get_confirmation_code_for_delete_user()
     assert confirmation_code_for_delete_user_from_email is not None, "Error with getting confirmation code from email to delete user. Try again"
