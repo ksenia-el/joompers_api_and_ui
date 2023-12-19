@@ -45,12 +45,19 @@ class Profile:
         except Exception as e:
             response_json = {"error": "Failed to parse JSON response", "details": str(e)}
         return response_json, response.status_code
-    def get_profile_by_username_pattern(self):
+    def get_profile_by_username_pattern(self, **kwargs):
+        params = {
+        }
+        params.update(kwargs)
         response = self.session.get(
-            self.base_url + "/api/profile/get_by_username_pattern"
+            f"{self.base_url}/api/profile/get_by_username_pattern", params=params
         )
-        return response.json(), response.status_code
-    def get_user_profile(self, uuid):
+        try:
+            response_json = response.json()
+        except Exception as e:
+            response_json = {"error": "Failed to parse JSON response", "details": str(e)}
+        return response_json, response.status_code
+    def get_profile(self, uuid):
         response = self.session.get(
             self.base_url + f"/api/profile/{uuid}"
         )
@@ -59,45 +66,46 @@ class Profile:
         except Exception as e:
             response_json = {"error": "Failed to parse JSON response", "details": str(e)}
         return response_json, response.status_code
-    def follow_user(self):
-        response = self.session.post(
-            self.base_url + "/api/profile/follow"
+    def follow_user(self, data):
+        response = self.session.post(url=
+            self.base_url + "/api/profile/follow", json=data
         )
         try:
             response_json = response.json()
         except Exception as e:
             response_json = {"error": "Failed to parse JSON response", "details": str(e)}
         return response_json, response.status_code
-    def unfollow_user(self):
+    def unfollow_user(self, data):
+
+        response = self.session.post(url=
+                                     self.base_url + "/api/profile/unfollow", json=data
+                                     )
+        try:
+            response_json = response.json()
+        except Exception as e:
+            response_json = {"error": "Failed to parse JSON response", "details": str(e)}
+        return response_json, response.status_code
+    def remove_follower(self, data):
+        response = self.session.post(url=
+                                     self.base_url + "/api/profile/remove_folower", params=data
+                                     )
+        try:
+            response_json = response.json()
+        except Exception as e:
+            response_json = {"error": "Failed to parse JSON response", "details": str(e)}
+        return response_json, response.status_code
+    def change_social_network(self, data):
         response = self.session.post(
-            self.base_url + "/api/profile/unfollow"
+            self.base_url + "/api/profile/change_social_network", json=data
         )
         try:
             response_json = response.json()
         except Exception as e:
             response_json = {"error": "Failed to parse JSON response", "details": str(e)}
         return response_json, response.status_code
-    def remove_follower(self):
-        response = self.session.post(
-            self.base_url + "/api/profile/remove_follower"
-        )
-        try:
-            response_json = response.json()
-        except Exception as e:
-            response_json = {"error": "Failed to parse JSON response", "details": str(e)}
-        return response_json, response.status_code
-    def change_social_network(self):
-        response = self.session.post(
-            self.base_url + "/api/profile/change_social_network"
-        )
-        try:
-            response_json = response.json()
-        except Exception as e:
-            response_json = {"error": "Failed to parse JSON response", "details": str(e)}
-        return response_json, response.status_code
-    def update_profile(self):
+    def update_profile(self, data):
         response = self.session.patch(
-            self.base_url + "/api/profile/update_profile"
+            self.base_url + "/api/profile/update", json=data
         )
         try:
             response_json = response.json()

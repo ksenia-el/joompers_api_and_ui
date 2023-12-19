@@ -8,7 +8,7 @@ from api.conftest import user_logged_in_session_fixture
 @allure.description('Chat conversations by chatId with extremely limit')
 @allure.severity('Normal')
 @pytest.mark.parametrize("limit, offset, expected_status", [
-    (9999999, 0, 200)
+    (9999999, 0, 422)
 ])
 
 def test_get_chat_with_chatId_extremely_hight_limit(user_logged_in_session_fixture, chat_id, limit, offset, expected_status):
